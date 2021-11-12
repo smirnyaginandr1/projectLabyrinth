@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 /*
@@ -16,8 +15,10 @@ public class MazeConstructor : MonoBehaviour
     [SerializeField] private GameObject pointPrefab;
 
 
+    private int _angle = 0;
+    private GameObject _obj;
+    
     private const int WALL_0 = 0;
-
     private const int WALL_1 = 1;
     private const int WALL_2 = 2;
     private const int WALL_2_ANGLE = 3;
@@ -37,9 +38,8 @@ public class MazeConstructor : MonoBehaviour
 
     public int[,] GenerateNewMaze(int sizeRows, int sizeCols)
     {
-        CheckWall helpCheckWall = new CheckWall();
-        HelpCheckWallInit(helpCheckWall);
-        
+        var helpCheckWall = new CheckWall();
+
         var dataGenerator = new MazeDataGenerator();
         var maze = dataGenerator.FromDimensions(sizeRows, sizeCols);
 
@@ -60,15 +60,13 @@ public class MazeConstructor : MonoBehaviour
         pointPrefab.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f, 2);
         
         var firstCell = new Vector2(-width / 2 + widthCell / 2, height / 2 - heightCell / 2);
-        
+
         for (var i = rMax; i >= 0; i--)
         {
             for (var j = 0; j <= cMax; j++)
             {
                 if (maze[i, j] == 0)
-                {
-                    Instantiate(pointPrefab, firstCell, Quaternion.identity);
-                }
+                    SetWallAngle(pointPrefab, 0);
                 else
                 {
                     if (i == 0 || i == rMax || j == 0 || j == cMax)
@@ -76,50 +74,29 @@ public class MazeConstructor : MonoBehaviour
                         if (i == 0)
                         {
                             if (j == 0)
-                            {
-                                Instantiate(allWall[WALL_2_ANGLE], firstCell, Quaternion.identity);
-                            }
+                                SetWallAngle(allWall[WALL_2_ANGLE], 0);
                             else if (j == cMax)
-                            {
-                                Instantiate(allWall[WALL_2_ANGLE], firstCell, Quaternion.identity)
-                                    .transform.rotation = Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + 90));
-
-                            }
+                                SetWallAngle(allWall[WALL_2_ANGLE], 90);
                             else
                             {
                                 if (maze[i + 1, j] != 0)
-                                    Instantiate(allWall[WALL_3], firstCell, Quaternion.identity);
+                                    SetWallAngle(allWall[WALL_3], 0);
                                 else
-                                    Instantiate(allWall[WALL_2], firstCell, Quaternion.identity)
-                                            .transform.rotation =
-                                        Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + 90));
+                                    SetWallAngle(allWall[WALL_2], 90);
                             }
                         }
                         else if (i == rMax)
                         {
                             if (j == 0)
-                            {
-                                Instantiate(allWall[WALL_2_ANGLE], firstCell, Quaternion.identity)
-                                        .transform.rotation =
-                                    Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z - 90));
-                            }
+                                SetWallAngle(allWall[WALL_2_ANGLE], 270);
                             else if (j == cMax)
-                            {
-                                Instantiate(allWall[WALL_2_ANGLE], firstCell, Quaternion.identity)
-                                        .transform.rotation =
-                                    Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + 180));
-
-                            }
+                                SetWallAngle(allWall[WALL_2_ANGLE], 180);
                             else
                             {
                                 if (maze[i - 1, j] != 0)
-                                    Instantiate(allWall[WALL_3], firstCell, Quaternion.identity)
-                                            .transform.rotation =
-                                        Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + 180));
+                                    SetWallAngle(allWall[WALL_3], 180);
                                 else
-                                    Instantiate(allWall[WALL_2], firstCell, Quaternion.identity)
-                                        .transform.rotation =
-                                    Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + 90));
+                                    SetWallAngle(allWall[WALL_2], 90);
                             }
                         }
                         else
@@ -127,104 +104,112 @@ public class MazeConstructor : MonoBehaviour
                             if (j == 0)
                             {
                                 if (maze[i, j + 1] != 0)
-                                    Instantiate(allWall[WALL_3], firstCell, Quaternion.identity)
-                                            .transform.rotation =
-                                        Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z - 90));
-                                else
-                                    Instantiate(allWall[WALL_2], firstCell, Quaternion.identity);
+                                    SetWallAngle(allWall[WALL_3], 270);
+                                else 
+                                    SetWallAngle(allWall[WALL_2], 0);
                             }
-
-                            if (j == cMax)
+                            else if (j == cMax)
                             {
                                 if (maze[i, j - 1] != 0)
-                                    Instantiate(allWall[WALL_3], firstCell, Quaternion.identity)
-                                            .transform.rotation =
-                                        Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + 90));
-                                else 
-                                    Instantiate(allWall[WALL_2], firstCell, Quaternion.identity);
-                                
+                                    SetWallAngle(allWall[WALL_3], 90);
+                                else
+                                    SetWallAngle(allWall[WALL_2], 0);
                             }
                             else
-                                Instantiate(allWall[WALL_2], firstCell, Quaternion.identity);
-
+                                SetWallAngle(allWall[WALL_2], 0);
                         }
-                            
                     }
                     else
                     {
-                        HelpCheckWallInit(helpCheckWall);
-                        int state = 0;
-                        if (maze[i - 1, j] != 0)
+                        helpCheckWall.bottom = false;
+                        helpCheckWall.top = false;
+                        helpCheckWall.left = false;
+                        helpCheckWall.right = false;
+                        var state = 4;
+                        if (maze[i - 1, j] == 0)
                         {
                             helpCheckWall.bottom = true;
-                            state++;
+                            state--;
                         }
 
-                        if (maze[i + 1, j] != 0)
+                        if (maze[i + 1, j] == 0)
                         {
                             helpCheckWall.top = true;
-                            state++;
+                            state--;
                         }
                         
-                        if (maze[i, j + 1] != 0)
+                        if (maze[i, j + 1] == 0)
                         {
                             helpCheckWall.right = true;
-                            state++;
+                            state--;
                         }
                         
-                        if (maze[i, j - 1] != 0)
+                        if (maze[i, j - 1] == 0)
                         {
                             helpCheckWall.left = true;
-                            state++;
+                            state--;
                         }
-                        
-                        var angle = 0;
                         
                         switch (state)
                         {
                             case 0:
-                                Instantiate(allWall[WALL_0], firstCell, Quaternion.identity);
+                                SetWallAngle(allWall[WALL_0], 0);
                                 break;
                             
                             case 1:
-                                if (helpCheckWall.left)
-                                    angle = 90;
-                                else if (helpCheckWall.right)
-                                    angle = -90;
-                                else if (helpCheckWall.bottom)
-                                    angle = 180;
-                                
-                                Instantiate(allWall[WALL_1], firstCell, Quaternion.identity)
-                                        .transform.rotation =
-                                    Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + angle));
+                                if (!helpCheckWall.left)
+                                    SetWallAngle(allWall[WALL_1], 90);
+                                else if (!helpCheckWall.right)
+                                    SetWallAngle(allWall[WALL_1], 270);
+                                else if (!helpCheckWall.bottom)
+                                    SetWallAngle(allWall[WALL_1], 180);
+                                else 
+                                    SetWallAngle(allWall[WALL_1], 0);
                                 break;
                             
                             case 2:
-                                
+                                if (!helpCheckWall.left)
+                                {
+                                    if (!helpCheckWall.right)
+                                        SetWallAngle(allWall[WALL_2], 90);
+                                    else if (!helpCheckWall.top)
+                                        SetWallAngle(allWall[WALL_2_ANGLE], 90);
+                                    else
+                                        SetWallAngle(allWall[WALL_2_ANGLE], 180);
+                                }
+                                else if(!helpCheckWall.top)
+                                {
+                                    SetWallAngle(!helpCheckWall.bottom ? allWall[WALL_2] : allWall[WALL_2_ANGLE], 0);
+                                }
+                                else
+                                    SetWallAngle(allWall[WALL_2_ANGLE], 270);
                                 break;
                                 
                             case 3:
-                                if (!helpCheckWall.top)
-                                    angle = 90;
-                                else if (!helpCheckWall.bottom)
-                                    angle = 180;
-                                else if (!helpCheckWall.right)
-                                    angle = -90;
-                                
-                                Instantiate(allWall[WALL_3], firstCell, Quaternion.identity)
-                                        .transform.rotation =
-                                    Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + angle));
+                                if (helpCheckWall.top)
+                                    SetWallAngle(allWall[WALL_3], 180);
+                                else if (helpCheckWall.bottom)
+                                    SetWallAngle(allWall[WALL_3], 0);
+                                else if (helpCheckWall.right)
+                                    SetWallAngle(allWall[WALL_3], 90);
+                                else
+                                    SetWallAngle(allWall[WALL_3], 270);
                                 break;
                                 
                             case 4:
-                                Instantiate(allWall[WALL_4], firstCell, Quaternion.identity);
+                                SetWallAngle(allWall[WALL_4], 0);
+                                break;
+                            default:
+                                SetWallAngle(allWall[WALL_0], 0);
                                 break;
                         }
 
                     }
                     
                 }
-                // Instantiate(maze[i, j] == 0 ? pointPrefab : wallPrefab, firstCell, Quaternion.identity);
+                Instantiate(_obj, firstCell, Quaternion.identity)
+                        .transform.rotation =
+                    Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + _angle));
                 firstCell.x += widthCell;
             }
 
@@ -234,6 +219,12 @@ public class MazeConstructor : MonoBehaviour
         return maze;
     }
 
+    private void SetWallAngle(GameObject wall, int angle)
+    {
+        _obj = wall;
+        _angle = angle;
+    }
+    
     private void InitWall(float widthCell, float heightCell)
     {
         allWall = new GameObject[6];
@@ -247,22 +238,4 @@ public class MazeConstructor : MonoBehaviour
         foreach (var t in allWall)
             t.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f , 2);
     }
-
-    private void HelpCheckWallInit(CheckWall check)
-    {
-        check.bottom = false;
-        check.top = false;
-        check.right = false;
-        check.left = false;
-    }
-    
-    private void CheckFigure(int posX, int posY, int[,] maze, Vector3 firstCell)
-    {
-        if (maze[posX, posY] == 0)
-        {
-            Instantiate(pointPrefab, firstCell, Quaternion.identity);
-            return;
-        }
-    }
-    
 }
