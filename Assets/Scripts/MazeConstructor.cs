@@ -66,146 +66,147 @@ public class MazeConstructor : MonoBehaviour
             for (var j = 0; j <= cMax; j++)
             {
                 if (maze[i, j] == 0)
-                    SetWallAngle(pointPrefab, 0);
-                else
                 {
-                    if (i == 0 || i == rMax || j == 0 || j == cMax)
+                    firstCell.x += widthCell;
+                    continue;
+                    //SetWallAngle(pointPrefab, 0);
+                }
+
+                if (i == 0 || i == rMax || j == 0 || j == cMax)
+                {
+                    if (i == 0)
                     {
-                        if (i == 0)
-                        {
-                            if (j == 0)
-                                SetWallAngle(allWall[WALL_2_ANGLE], 0);
-                            else if (j == cMax)
-                                SetWallAngle(allWall[WALL_2_ANGLE], 90);
-                            else
-                            {
-                                if (maze[i + 1, j] != 0)
-                                    SetWallAngle(allWall[WALL_3], 0);
-                                else
-                                    SetWallAngle(allWall[WALL_2], 90);
-                            }
-                        }
-                        else if (i == rMax)
-                        {
-                            if (j == 0)
-                                SetWallAngle(allWall[WALL_2_ANGLE], 270);
-                            else if (j == cMax)
-                                SetWallAngle(allWall[WALL_2_ANGLE], 180);
-                            else
-                            {
-                                if (maze[i - 1, j] != 0)
-                                    SetWallAngle(allWall[WALL_3], 180);
-                                else
-                                    SetWallAngle(allWall[WALL_2], 90);
-                            }
-                        }
+                        if (j == 0)
+                            SetWallAngle(allWall[WALL_2_ANGLE], 0);
+                        else if (j == cMax)
+                            SetWallAngle(allWall[WALL_2_ANGLE], 90);
                         else
                         {
-                            if (j == 0)
-                            {
-                                if (maze[i, j + 1] != 0)
-                                    SetWallAngle(allWall[WALL_3], 270);
-                                else 
-                                    SetWallAngle(allWall[WALL_2], 0);
-                            }
-                            else if (j == cMax)
-                            {
-                                if (maze[i, j - 1] != 0)
-                                    SetWallAngle(allWall[WALL_3], 90);
-                                else
-                                    SetWallAngle(allWall[WALL_2], 0);
-                            }
+                            if (maze[i + 1, j] != 0)
+                                SetWallAngle(allWall[WALL_3], 0);
                             else
-                                SetWallAngle(allWall[WALL_2], 0);
+                                SetWallAngle(allWall[WALL_2], 90);
+                        }
+                    }
+                    else if (i == rMax)
+                    {
+                        if (j == 0)
+                            SetWallAngle(allWall[WALL_2_ANGLE], 270);
+                        else if (j == cMax)
+                            SetWallAngle(allWall[WALL_2_ANGLE], 180);
+                        else
+                        {
+                            if (maze[i - 1, j] != 0)
+                                SetWallAngle(allWall[WALL_3], 180);
+                            else
+                                SetWallAngle(allWall[WALL_2], 90);
                         }
                     }
                     else
                     {
-                        helpCheckWall.bottom = false;
-                        helpCheckWall.top = false;
-                        helpCheckWall.left = false;
-                        helpCheckWall.right = false;
-                        var state = 4;
-                        if (maze[i - 1, j] == 0)
+                        if (j == 0)
                         {
-                            helpCheckWall.bottom = true;
-                            state--;
+                            if (maze[i, j + 1] != 0)
+                                SetWallAngle(allWall[WALL_3], 270);
+                            else 
+                                SetWallAngle(allWall[WALL_2], 0);
                         }
-
-                        if (maze[i + 1, j] == 0)
+                        else if (j == cMax)
                         {
-                            helpCheckWall.top = true;
-                            state--;
+                            if (maze[i, j - 1] != 0)
+                                SetWallAngle(allWall[WALL_3], 90);
+                            else
+                                SetWallAngle(allWall[WALL_2], 0);
                         }
-                        
-                        if (maze[i, j + 1] == 0)
-                        {
-                            helpCheckWall.right = true;
-                            state--;
-                        }
-                        
-                        if (maze[i, j - 1] == 0)
-                        {
-                            helpCheckWall.left = true;
-                            state--;
-                        }
-                        
-                        switch (state)
-                        {
-                            case 0:
-                                SetWallAngle(allWall[WALL_0], 0);
-                                break;
-                            
-                            case 1:
-                                if (!helpCheckWall.left)
-                                    SetWallAngle(allWall[WALL_1], 90);
-                                else if (!helpCheckWall.right)
-                                    SetWallAngle(allWall[WALL_1], 270);
-                                else if (!helpCheckWall.bottom)
-                                    SetWallAngle(allWall[WALL_1], 180);
-                                else 
-                                    SetWallAngle(allWall[WALL_1], 0);
-                                break;
-                            
-                            case 2:
-                                if (!helpCheckWall.left)
-                                {
-                                    if (!helpCheckWall.right)
-                                        SetWallAngle(allWall[WALL_2], 90);
-                                    else if (!helpCheckWall.top)
-                                        SetWallAngle(allWall[WALL_2_ANGLE], 90);
-                                    else
-                                        SetWallAngle(allWall[WALL_2_ANGLE], 180);
-                                }
-                                else if(!helpCheckWall.top)
-                                {
-                                    SetWallAngle(!helpCheckWall.bottom ? allWall[WALL_2] : allWall[WALL_2_ANGLE], 0);
-                                }
-                                else
-                                    SetWallAngle(allWall[WALL_2_ANGLE], 270);
-                                break;
-                                
-                            case 3:
-                                if (helpCheckWall.top)
-                                    SetWallAngle(allWall[WALL_3], 180);
-                                else if (helpCheckWall.bottom)
-                                    SetWallAngle(allWall[WALL_3], 0);
-                                else if (helpCheckWall.right)
-                                    SetWallAngle(allWall[WALL_3], 90);
-                                else
-                                    SetWallAngle(allWall[WALL_3], 270);
-                                break;
-                                
-                            case 4:
-                                SetWallAngle(allWall[WALL_4], 0);
-                                break;
-                            default:
-                                SetWallAngle(allWall[WALL_0], 0);
-                                break;
-                        }
-
+                        else
+                            SetWallAngle(allWall[WALL_2], 0);
                     }
-                    
+                }
+                else
+                {
+                    helpCheckWall.bottom = false;
+                    helpCheckWall.top = false;
+                    helpCheckWall.left = false;
+                    helpCheckWall.right = false;
+                    var state = 4;
+                    if (maze[i - 1, j] == 0)
+                    {
+                        helpCheckWall.bottom = true;
+                        state--;
+                    }
+
+                    if (maze[i + 1, j] == 0)
+                    {
+                        helpCheckWall.top = true;
+                        state--;
+                    }
+                        
+                    if (maze[i, j + 1] == 0)
+                    {
+                        helpCheckWall.right = true;
+                        state--;
+                    }
+                        
+                    if (maze[i, j - 1] == 0)
+                    {
+                        helpCheckWall.left = true;
+                        state--;
+                    }
+                        
+                    switch (state)
+                    {
+                        case 0:
+                            SetWallAngle(allWall[WALL_0], 0);
+                            break;
+                            
+                        case 1:
+                            if (!helpCheckWall.left)
+                                SetWallAngle(allWall[WALL_1], 90);
+                            else if (!helpCheckWall.right)
+                                SetWallAngle(allWall[WALL_1], 270);
+                            else if (!helpCheckWall.bottom)
+                                SetWallAngle(allWall[WALL_1], 180);
+                            else 
+                                SetWallAngle(allWall[WALL_1], 0);
+                            break;
+                            
+                        case 2:
+                            if (!helpCheckWall.left)
+                            {
+                                if (!helpCheckWall.right)
+                                    SetWallAngle(allWall[WALL_2], 90);
+                                else if (!helpCheckWall.top)
+                                    SetWallAngle(allWall[WALL_2_ANGLE], 90);
+                                else
+                                    SetWallAngle(allWall[WALL_2_ANGLE], 180);
+                            }
+                            else if(!helpCheckWall.top)
+                            {
+                                SetWallAngle(!helpCheckWall.bottom ? allWall[WALL_2] : allWall[WALL_2_ANGLE], 0);
+                            }
+                            else
+                                SetWallAngle(allWall[WALL_2_ANGLE], 270);
+                            break;
+                                
+                        case 3:
+                            if (helpCheckWall.top)
+                                SetWallAngle(allWall[WALL_3], 180);
+                            else if (helpCheckWall.bottom)
+                                SetWallAngle(allWall[WALL_3], 0);
+                            else if (helpCheckWall.right)
+                                SetWallAngle(allWall[WALL_3], 90);
+                            else
+                                SetWallAngle(allWall[WALL_3], 270);
+                            break;
+                                
+                        case 4:
+                            SetWallAngle(allWall[WALL_4], 0);
+                            break;
+                        default:
+                            SetWallAngle(allWall[WALL_0], 0);
+                            break;
+                    }
+
                 }
                 Instantiate(_obj, firstCell, Quaternion.identity)
                         .transform.rotation =

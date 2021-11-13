@@ -77,3 +77,10 @@ crashlytics-build.properties
 
 /.idea
 /Assets/Scenes/*.meta
+Assets/Prefabs/Player/*.meta
+Assets/Prefabs/Player/Animation/*.meta
+Assets/Prefabs/Player/Animation/RulLeft/*.meta
+Assets/Prefabs/Player/Animation/RunBottom/*.meta
+Assets/Prefabs/Player/Animation/RunRight/*.meta
+Assets/Prefabs/Player/Animation/RunTop/*.meta
+Assets/Sprites/PlayerSprites/*.meta
