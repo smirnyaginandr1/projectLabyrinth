@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,11 +6,13 @@ using UnityEngine.Serialization;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private GameObject playerPrefabBottom;
-    [SerializeField] private GameObject playerPrefabTop;
-    [SerializeField] private GameObject playerPrefabLeft;
-    [SerializeField] private GameObject playerPrefabRight;
+    
+    private bool start = false;
+    [SerializeField] private GameObject[] playerPrefab;
 
+    private GameObject playerGameObject;
+
+    private GameObject currentObject;
     public void CreatePlayer(int[,] maze)
     {
         var height = Camera.main.orthographicSize * 1.95f;
@@ -21,11 +24,12 @@ public class Player : MonoBehaviour
         var heightCell = height / (rMax + 1);
         var widthCell = width / (cMax + 1);
 
-        playerPrefabBottom.transform.localScale = new Vector3(widthCell + 0.5f, heightCell + 0.5f, 2);
-        playerPrefabLeft.transform.localScale = new Vector3(widthCell + 0.5f, heightCell + 0.5f, 2);
-        playerPrefabRight.transform.localScale = new Vector3(widthCell + 0.5f, heightCell + 0.5f, 2);
-        playerPrefabTop.transform.localScale = new Vector3(widthCell + 0.5f, heightCell + 0.5f, 2);
-        
+        foreach (var t in playerPrefab)
+        {
+            t.transform.localScale = new Vector3(widthCell + 0.5f, heightCell + 0.5f, 2);
+           // t.SetActive(false);
+        }
+        playerPrefab[1].SetActive(true);
         var firstCell = new Vector2(-width / 2 + widthCell / 2, height / 2 - heightCell / 2);
 
         
@@ -35,7 +39,8 @@ public class Player : MonoBehaviour
             {
                 if (maze[i, j] == 0)
                 {
-                    Instantiate(playerPrefabBottom, firstCell, Quaternion.identity);
+                    currentObject = Instantiate(playerPrefab[1], firstCell, Quaternion.identity);
+                    start = true;
                     return;
                 }
                 firstCell.x += widthCell;
@@ -44,25 +49,38 @@ public class Player : MonoBehaviour
             firstCell.y -= heightCell;
             firstCell.x = -width / 2 + widthCell / 2;
         }
-    }
 
-    public void SetTopPlayer()
-    {
         
     }
 
-    public void SetBottomPlayer()
+    private const float speed = 0.02f;
+    private void Update()
     {
-        
-    }
+        if (!start) return;
+        var xDirection = Input.GetAxis("Horizontal");
+        var yDirection = Input.GetAxis("Vertical");
 
-    public void SetLeftPlayer()
-    {
-        
-    }
+        var move = new Vector3(xDirection, yDirection, playerPrefab[0].transform.position.z);
 
-    public void SetRightPlayer()
-    {
+        currentObject.transform.position += speed * move;
+
+        var temp = currentObject.transform.position;
         
+        if (Input.GetKey ("w") && currentObject != playerPrefab[0]) {
+            Destroy(currentObject);
+            currentObject = Instantiate(playerPrefab[0], temp, Quaternion.identity);
+        }
+        if (Input.GetKey ("s") && currentObject != playerPrefab[1]) {
+            Destroy(currentObject);
+            currentObject = Instantiate(playerPrefab[1], temp, Quaternion.identity);
+        }
+        if (Input.GetKey ("d") && currentObject != playerPrefab[3]) {
+            Destroy(currentObject);
+            currentObject = Instantiate(playerPrefab[3], temp, Quaternion.identity);
+        }
+        if (Input.GetKey ("a") && currentObject != playerPrefab[2]) {
+            Destroy(currentObject);
+            currentObject = Instantiate(playerPrefab[2], temp, Quaternion.identity);
+        }
     }
 }

@@ -6,16 +6,9 @@ using UnityEngine;
 
 public class MazeConstructor : MonoBehaviour
 {
-    [SerializeField] private GameObject wall0Prefab;
-    [SerializeField] private GameObject wall1Prefab;
-    [SerializeField] private GameObject wall2Prefab;
-    [SerializeField] private GameObject wall2AnglePrefab;
-    [SerializeField] private GameObject wall3Prefab;
-    [SerializeField] private GameObject wall4Prefab;
     [SerializeField] private GameObject pointPrefab;
 
-
-    private int _angle = 0;
+    private int _angle;
     private GameObject _obj;
     
     private const int WALL_0 = 0;
@@ -25,7 +18,7 @@ public class MazeConstructor : MonoBehaviour
     private const int WALL_3 = 4;
     private const int WALL_4 = 5;
     
-    private GameObject[] allWall;
+    [SerializeField] private GameObject[] allWall;
 
     private struct CheckWall
     {
@@ -54,8 +47,9 @@ public class MazeConstructor : MonoBehaviour
 
         var heightCell = height / (rMax + 1);
         var widthCell = width / (cMax + 1);
-
-        InitWall(widthCell, heightCell);
+        
+        foreach (var t in allWall)
+            t.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f , 2);
         
         pointPrefab.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f, 2);
         
@@ -224,19 +218,5 @@ public class MazeConstructor : MonoBehaviour
     {
         _obj = wall;
         _angle = angle;
-    }
-    
-    private void InitWall(float widthCell, float heightCell)
-    {
-        allWall = new GameObject[6];
-        allWall[0] = wall0Prefab;
-        allWall[1] = wall1Prefab;
-        allWall[2] = wall2Prefab;
-        allWall[3] = wall2AnglePrefab;
-        allWall[4] = wall3Prefab;
-        allWall[5] = wall4Prefab;
-        
-        foreach (var t in allWall)
-            t.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f , 2);
     }
 }
