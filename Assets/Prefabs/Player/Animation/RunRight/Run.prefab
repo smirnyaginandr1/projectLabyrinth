@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1745225701592582824}
   - component: {fileID: 946711053039025791}
   m_Layer: 0
-  m_Name: RunRightAnim
+  m_Name: Run
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
