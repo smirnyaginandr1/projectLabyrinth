@@ -1,25 +1,30 @@
 using UnityEngine;
 
 /*
- * @brief: Класс создания лабиринта
+ * @brief: Класс создания лабиринта и объектов
  */
 
-public class MazeConstructor : MonoBehaviour
+public class Constructor : MonoBehaviour
 {
     [SerializeField] private GameObject pointPrefab;
+    
+    [SerializeField] private GameObject controller;
 
+    private int _pointCount = 0;
     private int _angle;
     private GameObject _obj;
     
-    private const int WALL_0 = 0;
-    private const int WALL_1 = 1;
-    private const int WALL_2 = 2;
-    private const int WALL_2_ANGLE = 3;
-    private const int WALL_3 = 4;
-    private const int WALL_4 = 5;
+    private const int Wall0 = 0;
+    private const int Wall1 = 1;
+    private const int Wall2 = 2;
+    private const int Wall2Angle = 3;
+    private const int Wall3 = 4;
+    private const int Wall4 = 5;
     
     [SerializeField] private GameObject[] allWall;
 
+    private GameController _gameController;
+    private Player _player;
     private struct CheckWall
     {
         public bool top;
@@ -31,6 +36,9 @@ public class MazeConstructor : MonoBehaviour
 
     public int[,] GenerateNewMaze(int sizeRows, int sizeCols)
     {
+        _gameController = controller.GetComponent<GameController>();
+        _player = controller.GetComponent<Player>();
+
         var helpCheckWall = new CheckWall();
 
         var dataGenerator = new MazeDataGenerator();
@@ -51,19 +59,27 @@ public class MazeConstructor : MonoBehaviour
         foreach (var t in allWall)
             t.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f , 2);
         
-        pointPrefab.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f, 2);
-        
+        pointPrefab.transform.localScale = new Vector3(widthCell - 0.8f, heightCell - 0.8f, 2);
+        pointPrefab.SetActive(true);
         var firstCell = new Vector2(-width / 2 + widthCell / 2, height / 2 - heightCell / 2);
 
         for (var i = rMax; i >= 0; i--)
         {
             for (var j = 0; j <= cMax; j++)
             {
-                if (maze[i, j] == 0)
+                if (i == 1 && j == 1)
                 {
+                    _player.CreatePlayer(maze, widthCell, heightCell, firstCell);
                     firstCell.x += widthCell;
                     continue;
-                    //SetWallAngle(pointPrefab, 0);
+                }
+                    
+                if (maze[i, j] == 0)
+                {
+                    _pointCount++;
+                    firstCell.x += widthCell;
+                    Instantiate(pointPrefab, new Vector2(firstCell.x - widthCell, firstCell.y), Quaternion.identity);
+                    continue;
                 }
 
                 if (i == 0 || i == rMax || j == 0 || j == cMax)
@@ -71,29 +87,29 @@ public class MazeConstructor : MonoBehaviour
                     if (i == 0)
                     {
                         if (j == 0)
-                            SetWallAngle(allWall[WALL_2_ANGLE], 0);
+                            SetWallAngle(allWall[Wall2Angle], 0);
                         else if (j == cMax)
-                            SetWallAngle(allWall[WALL_2_ANGLE], 90);
+                            SetWallAngle(allWall[Wall2Angle], 90);
                         else
                         {
                             if (maze[i + 1, j] != 0)
-                                SetWallAngle(allWall[WALL_3], 0);
+                                SetWallAngle(allWall[Wall3], 0);
                             else
-                                SetWallAngle(allWall[WALL_2], 90);
+                                SetWallAngle(allWall[Wall2], 90);
                         }
                     }
                     else if (i == rMax)
                     {
                         if (j == 0)
-                            SetWallAngle(allWall[WALL_2_ANGLE], 270);
+                            SetWallAngle(allWall[Wall2Angle], 270);
                         else if (j == cMax)
-                            SetWallAngle(allWall[WALL_2_ANGLE], 180);
+                            SetWallAngle(allWall[Wall2Angle], 180);
                         else
                         {
                             if (maze[i - 1, j] != 0)
-                                SetWallAngle(allWall[WALL_3], 180);
+                                SetWallAngle(allWall[Wall3], 180);
                             else
-                                SetWallAngle(allWall[WALL_2], 90);
+                                SetWallAngle(allWall[Wall2], 90);
                         }
                     }
                     else
@@ -101,19 +117,19 @@ public class MazeConstructor : MonoBehaviour
                         if (j == 0)
                         {
                             if (maze[i, j + 1] != 0)
-                                SetWallAngle(allWall[WALL_3], 270);
+                                SetWallAngle(allWall[Wall3], 270);
                             else 
-                                SetWallAngle(allWall[WALL_2], 0);
+                                SetWallAngle(allWall[Wall2], 0);
                         }
                         else if (j == cMax)
                         {
                             if (maze[i, j - 1] != 0)
-                                SetWallAngle(allWall[WALL_3], 90);
+                                SetWallAngle(allWall[Wall3], 90);
                             else
-                                SetWallAngle(allWall[WALL_2], 0);
+                                SetWallAngle(allWall[Wall2], 0);
                         }
                         else
-                            SetWallAngle(allWall[WALL_2], 0);
+                            SetWallAngle(allWall[Wall2], 0);
                     }
                 }
                 else
@@ -134,74 +150,76 @@ public class MazeConstructor : MonoBehaviour
                         helpCheckWall.top = true;
                         state--;
                     }
-                        
+
                     if (maze[i, j + 1] == 0)
                     {
                         helpCheckWall.right = true;
                         state--;
                     }
-                        
+
                     if (maze[i, j - 1] == 0)
                     {
                         helpCheckWall.left = true;
                         state--;
                     }
-                        
+
                     switch (state)
                     {
                         case 0:
-                            SetWallAngle(allWall[WALL_0], 0);
+                            SetWallAngle(allWall[Wall0], 0);
                             break;
-                            
+
                         case 1:
                             if (!helpCheckWall.left)
-                                SetWallAngle(allWall[WALL_1], 90);
+                                SetWallAngle(allWall[Wall1], 90);
                             else if (!helpCheckWall.right)
-                                SetWallAngle(allWall[WALL_1], 270);
+                                SetWallAngle(allWall[Wall1], 270);
                             else if (!helpCheckWall.bottom)
-                                SetWallAngle(allWall[WALL_1], 180);
-                            else 
-                                SetWallAngle(allWall[WALL_1], 0);
+                                SetWallAngle(allWall[Wall1], 180);
+                            else
+                                SetWallAngle(allWall[Wall1], 0);
                             break;
-                            
+
                         case 2:
                             if (!helpCheckWall.left)
                             {
                                 if (!helpCheckWall.right)
-                                    SetWallAngle(allWall[WALL_2], 90);
+                                    SetWallAngle(allWall[Wall2], 90);
                                 else if (!helpCheckWall.top)
-                                    SetWallAngle(allWall[WALL_2_ANGLE], 90);
+                                    SetWallAngle(allWall[Wall2Angle], 90);
                                 else
-                                    SetWallAngle(allWall[WALL_2_ANGLE], 180);
+                                    SetWallAngle(allWall[Wall2Angle], 180);
                             }
-                            else if(!helpCheckWall.top)
+                            else if (!helpCheckWall.top)
                             {
-                                SetWallAngle(!helpCheckWall.bottom ? allWall[WALL_2] : allWall[WALL_2_ANGLE], 0);
+                                SetWallAngle(!helpCheckWall.bottom ? allWall[Wall2] : allWall[Wall2Angle], 0);
                             }
                             else
-                                SetWallAngle(allWall[WALL_2_ANGLE], 270);
+                                SetWallAngle(allWall[Wall2Angle], 270);
+
                             break;
-                                
+
                         case 3:
                             if (helpCheckWall.top)
-                                SetWallAngle(allWall[WALL_3], 180);
+                                SetWallAngle(allWall[Wall3], 180);
                             else if (helpCheckWall.bottom)
-                                SetWallAngle(allWall[WALL_3], 0);
+                                SetWallAngle(allWall[Wall3], 0);
                             else if (helpCheckWall.right)
-                                SetWallAngle(allWall[WALL_3], 90);
+                                SetWallAngle(allWall[Wall3], 90);
                             else
-                                SetWallAngle(allWall[WALL_3], 270);
+                                SetWallAngle(allWall[Wall3], 270);
                             break;
-                                
+
                         case 4:
-                            SetWallAngle(allWall[WALL_4], 0);
+                            SetWallAngle(allWall[Wall4], 0);
                             break;
                         default:
-                            SetWallAngle(allWall[WALL_0], 0);
+                            SetWallAngle(allWall[Wall0], 0);
                             break;
                     }
 
                 }
+                
                 Instantiate(_obj, firstCell, Quaternion.identity)
                         .transform.rotation =
                     Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + _angle));
@@ -211,6 +229,8 @@ public class MazeConstructor : MonoBehaviour
             firstCell.y -= heightCell;
             firstCell.x = -width / 2 + widthCell / 2;
         }
+        
+        _gameController.SetMaxPoint(_pointCount);
         return maze;
     }
 

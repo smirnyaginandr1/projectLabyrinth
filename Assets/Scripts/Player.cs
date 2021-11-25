@@ -1,15 +1,21 @@
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     //Аниматор для запуска анимаций
     private Animator _anim;
+
+    private Text textFinish;
+
+    private Button buttonRestart;
     
-    //Флаг запущенной анимации
-    private bool _animationRun;
+    [SerializeField] private GameObject controller;
+    private GameController _gameController;
     
     //Скорость игрока
-    private const float Speed = 0.01f;
+    private const float Speed = 0.04f;
     
     //Текущее направление игрока
     private int _currentDirection = 1;
@@ -22,50 +28,16 @@ public class Player : MonoBehaviour
 
     //Текущий префаб
     private GameObject _currentObject;
-    public void CreatePlayer(int[,] maze)
+    public void CreatePlayer(int[,] maze, float widthCell, float heightCell, Vector2 firstCell)
     {
-        if (Camera.main is null) return;
         
-        //Получение длины и ширины экрана
-        var height = Camera.main.orthographicSize * 1.95f;
-        var width = height / Screen.height * Screen.width;
-    
-        //Получение количества строк и столбцов лабиринта
-        var rMax = maze.GetUpperBound(0);
-        var cMax = maze.GetUpperBound(1);
-
-        //Вычисление длины и ширины одной ячейки
-        var heightCell = height / (rMax + 1);
-        var widthCell = width / (cMax + 1);
-
         //Смена размеров префабов игрока
         foreach (var t in playerPrefab)
-        {
             t.transform.localScale = new Vector3(widthCell + 0.5f, heightCell + 0.5f, 2);
-        }
-        
-        //Ячейка спавна игрока
-        var firstCell = new Vector2(-width / 2 + widthCell / 2, height / 2 - heightCell / 2);
 
-        
-        for (var i = rMax; i >= 0; i--)
-        {
-            for (var j = 0; j <= cMax; j++)
-            {
-                //Проверка на стену. Если не стена, то игрок спавнится тут
-                if (maze[i, j] == 0)
-                {
-                    _currentObject = Instantiate(playerPrefab[1], firstCell, Quaternion.identity);
-                    _anim = _currentObject.GetComponent<Animator>();
-                    _start = true;
-                    return;
-                }
-                firstCell.x += widthCell;
-            }
-
-            firstCell.y -= heightCell;
-            firstCell.x = -width / 2 + widthCell / 2;
-        }
+        _currentObject = Instantiate(playerPrefab[1], firstCell, Quaternion.identity);
+        _anim = _currentObject.GetComponent<Animator>();
+        _start = true;
     }
 
     private void Update()
@@ -73,7 +45,7 @@ public class Player : MonoBehaviour
         if (!_start) return;
         
         //Последняя позиция игрока
-        var lastPosition = _currentObject.transform.position;
+        Vector2 lastPosition = _currentObject.transform.position;
         
         //Сдвиг по X и Y (нажатие на кнопку)
         var xDirection = Input.GetAxis("Horizontal");
@@ -99,12 +71,10 @@ public class Player : MonoBehaviour
                 _anim = _currentObject.GetComponent<Animator>();
             }
             //Проверка на запущенную анимацию
-            if (!_animationRun)
+            if (!_anim.enabled)
             {
                 //Включение анимации
-                _anim.enabled = true;
-                _anim.speed = 1f;
-                _animationRun = true;
+                EnableAnimation(1);
             }
             
         }
@@ -117,11 +87,9 @@ public class Player : MonoBehaviour
                 _currentObject = Instantiate(playerPrefab[1], lastPosition, Quaternion.identity);
                 _anim = _currentObject.GetComponent<Animator>();
             }
-            if (!_animationRun)
+            if (!_anim.enabled)
             {
-                _anim.enabled = true;
-                _anim.speed = 1f;
-                _animationRun = true;
+                EnableAnimation(1);
             }
         }
         else if (Input.GetKey ("d"))
@@ -134,11 +102,9 @@ public class Player : MonoBehaviour
                 _anim = _currentObject.GetComponent<Animator>();
             }
 
-            if (!_animationRun)
+            if (!_anim.enabled)
             {
-                _anim.enabled = true;
-                _anim.speed = 1f;
-                _animationRun = true;
+                EnableAnimation(1);
             }
         }
         else if (Input.GetKey ("a"))
@@ -150,11 +116,9 @@ public class Player : MonoBehaviour
                 _currentObject = Instantiate(playerPrefab[2], lastPosition, Quaternion.identity);
                 _anim = _currentObject.GetComponent<Animator>();
             }
-            if (!_animationRun)
+            if (!_anim.enabled)
             {
-                _anim.enabled = true;
-                _anim.speed = 1f;
-                _animationRun = true;
+                EnableAnimation(1);
             }
         }
         
@@ -162,14 +126,39 @@ public class Player : MonoBehaviour
         _currentObject.transform.position += Speed * move;
         
         //Если позиция не изменилась, останавливаем анимацию
-        if (lastPosition == _currentObject.transform.position)
+        if (lastPosition.x == _currentObject.transform.position.x
+        && lastPosition.y == _currentObject.transform.position.y)
         {
-            _anim.enabled = false;
-            _anim.speed = 0;
-            _animationRun = false;
+            EnableAnimation(0);
         }
         
         //Запрет на сальто
         _currentObject.transform.rotation = playerPrefab[0].transform.rotation;
+    }
+    private void EnableAnimation(int value)
+    {
+        switch (value)
+        {
+            case 1:
+                _anim.enabled = true;
+                _anim.speed = 1f;
+                break;
+            case 0:
+                _anim.enabled = false;
+                _anim.speed = 0;
+                break;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!other.CompareTag("Point")) return;
+        var enteredObject = other.gameObject;
+        Destroy(enteredObject);
+        controller = GameObject.FindWithTag("Controller");
+        _gameController = controller.GetComponent<GameController>();
+        _gameController.AddCurrentPoint();
+        if (_gameController.GetCurrentPoint() == _gameController.GetMaxPoint())
+            _gameController.Finish();
     }
 }

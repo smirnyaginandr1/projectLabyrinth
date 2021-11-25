@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Wall
   - Point
+  - Controller
   layers:
   - Default
   - TransparentFX
