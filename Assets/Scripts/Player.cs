@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +14,7 @@ public class Player : MonoBehaviour
     private GameController _gameController;
     
     //Скорость игрока
-    private const float Speed = 0.04f;
+    private float _speed = 0.2f;
     
     //Текущее направление игрока
     private int _currentDirection = 1;
@@ -26,6 +25,11 @@ public class Player : MonoBehaviour
     //Префабы игрока
     [SerializeField] private GameObject[] playerPrefab;
 
+    //Переменные для гироскопа
+    private Vector3 lastGyro;
+    
+    
+    
     //Текущий префаб
     private GameObject _currentObject;
     public void CreatePlayer(int[,] maze, float widthCell, float heightCell, Vector2 firstCell)
@@ -38,24 +42,34 @@ public class Player : MonoBehaviour
         _currentObject = Instantiate(playerPrefab[1], firstCell, Quaternion.identity);
         _anim = _currentObject.GetComponent<Animator>();
         _start = true;
+
+        Input.gyro.enabled = true;
+        lastGyro = Input.gyro.rotationRateUnbiased;
+        
     }
 
-    private void Update()
+    private float _floatGyroX = 0;
+    private float _floatGyroY = 0;
+    private Vector2 lastPosition;
+        
+    
+    private void FixedUpdate()
     {
         if (!_start) return;
+
+        var gyro = Vector3.Lerp(lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
         
         //Последняя позиция игрока
-        Vector2 lastPosition = _currentObject.transform.position;
-        
-        //Сдвиг по X и Y (нажатие на кнопку)
-        var xDirection = Input.GetAxis("Horizontal");
-        var yDirection = Input.GetAxis("Vertical");
-        
-        //Смещённая позиция игрока
-        var move = new Vector3(xDirection, yDirection, playerPrefab[0].transform.position.z);
+        lastPosition = _currentObject.transform.position;
+
+
+        var move = new Vector3(
+            -lastGyro.y,
+            lastGyro.x,
+            playerPrefab[0].transform.position.z);
         
         //Проверка на нажатую кнопку (в Android будет гироскоп)
-        if (Input.GetKey ("w"))
+        if (gyro.y > lastGyro.y/*Input.GetKey ("w")*/)
         {
             //Проверка на текущее направление
             if (_currentDirection != 0)
@@ -78,7 +92,7 @@ public class Player : MonoBehaviour
             }
             
         }
-        else if (Input.GetKey ("s"))
+        else if (gyro.y < lastGyro.y/*Input.GetKey ("s")*/)
         {
             if (_currentDirection != 1)
             {
@@ -92,7 +106,7 @@ public class Player : MonoBehaviour
                 EnableAnimation(1);
             }
         }
-        else if (Input.GetKey ("d"))
+        else if (/*Input.GetKey ("d")*/gyro.x > lastGyro.x)
         {
             if (_currentDirection != 3)
             {
@@ -107,7 +121,7 @@ public class Player : MonoBehaviour
                 EnableAnimation(1);
             }
         }
-        else if (Input.GetKey ("a"))
+        else if (/*Input.GetKey ("a")*/gyro.x < lastGyro.x)
         {
             if (_currentDirection != 2)
             {
@@ -121,9 +135,13 @@ public class Player : MonoBehaviour
                 EnableAnimation(1);
             }
         }
+
         
+        lastGyro = gyro;
+
+
         //Смена положения игрока
-        _currentObject.transform.position += Speed * move;
+        _currentObject.transform.position += _speed * move;
         
         //Если позиция не изменилась, останавливаем анимацию
         if (lastPosition.x == _currentObject.transform.position.x
