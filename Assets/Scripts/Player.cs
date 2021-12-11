@@ -6,166 +6,109 @@ public class Player : MonoBehaviour
     //Аниматор для запуска анимаций
     private Animator _anim;
 
-    private Text textFinish;
-
-    private Button buttonRestart;
-    
     [SerializeField] private GameObject controller;
     private GameController _gameController;
-    
+    private AnimationClip[] clips;
     //Скорость игрока
-    private float _speed = 0.2f;
-    
-    //Текущее направление игрока
-    private int _currentDirection = 1;
-    
+    private readonly float _speed = 0.2f;
+
     //Флаг ожидания инициализации
     private bool _start;
-    
-    //Префабы игрока
-    [SerializeField] private GameObject[] playerPrefab;
 
     //Переменные для гироскопа
-    private Vector3 lastGyro;
-    
-    
-    
-    //Текущий префаб
-    private GameObject _currentObject;
-    public void CreatePlayer(int[,] maze, float widthCell, float heightCell, Vector2 firstCell)
-    {
-        
-        //Смена размеров префабов игрока
-        foreach (var t in playerPrefab)
-            t.transform.localScale = new Vector3(widthCell + 0.5f, heightCell + 0.5f, 2);
+    private Vector2 _lastGyro;
+    private Rigidbody2D _rb;
 
-        _currentObject = Instantiate(playerPrefab[1], firstCell, Quaternion.identity);
-        _anim = _currentObject.GetComponent<Animator>();
+
+    public void CreatePlayer(float widthCell, float heightCell, Vector2 firstCell)
+    {
+        transform.localScale = new Vector2(widthCell + 0.5f, heightCell + 0.5f);
+        transform.position = new Vector2(firstCell.x, firstCell.y);
+
+        _anim = GetComponent<Animator>();
+        clips = _anim.runtimeAnimatorController.animationClips;
+        Input.gyro.enabled = true;
+        _lastGyro = Input.gyro.rotationRateUnbiased;
+        
+        _rb = GetComponent<Rigidbody2D>();
+        _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         _start = true;
 
-        Input.gyro.enabled = true;
-        lastGyro = Input.gyro.rotationRateUnbiased;
-        
+        //_anim.enabled = false;
+        _anim.enabled = true;
+        _anim.speed = 1f;
+        _anim.Play(clips[0].name);
     }
 
-    private float _floatGyroX = 0;
-    private float _floatGyroY = 0;
-    private Vector2 lastPosition;
+    private Vector2 _lastPosition;
         
     
     private void FixedUpdate()
     {
         if (!_start) return;
 
-        var gyro = Vector3.Lerp(lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
+        var gyro = Vector2.Lerp(_lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
         
         //Последняя позиция игрока
-        lastPosition = _currentObject.transform.position;
+        _lastPosition = transform.position;
 
 
-        var move = new Vector3(
-            -lastGyro.y,
-            lastGyro.x,
-            playerPrefab[0].transform.position.z);
-        
-        //Проверка на нажатую кнопку (в Android будет гироскоп)
-        if (gyro.y > lastGyro.y/*Input.GetKey ("w")*/)
-        {
-            //Проверка на текущее направление
-            if (_currentDirection != 0)
-            {
-                //Смена направления 
-                _currentDirection = 0;
-                
-                //Уничтожение и создание нового объекта
-                Destroy(_currentObject);
-                _currentObject = Instantiate(playerPrefab[0], lastPosition, Quaternion.identity);
-                
-                //Присваивание нового аниматора
-                _anim = _currentObject.GetComponent<Animator>();
-            }
-            //Проверка на запущенную анимацию
-            if (!_anim.enabled)
-            {
-                //Включение анимации
-                EnableAnimation(1);
-            }
-            
-        }
-        else if (gyro.y < lastGyro.y/*Input.GetKey ("s")*/)
-        {
-            if (_currentDirection != 1)
-            {
-                _currentDirection = 1;
-                Destroy(_currentObject);
-                _currentObject = Instantiate(playerPrefab[1], lastPosition, Quaternion.identity);
-                _anim = _currentObject.GetComponent<Animator>();
-            }
-            if (!_anim.enabled)
-            {
-                EnableAnimation(1);
-            }
-        }
-        else if (/*Input.GetKey ("d")*/gyro.x > lastGyro.x)
-        {
-            if (_currentDirection != 3)
-            {
-                _currentDirection = 3;
-                Destroy(_currentObject);
-                _currentObject = Instantiate(playerPrefab[3], lastPosition, Quaternion.identity);
-                _anim = _currentObject.GetComponent<Animator>();
-            }
+        var move = new Vector2(-_lastGyro.y, _lastGyro.x);
 
-            if (!_anim.enabled)
+        if (gyro.y > 0)
+        {
+            if (gyro.y > Mathf.Abs(gyro.x))
             {
-                EnableAnimation(1);
+                _anim.Play(clips[2].name);
+            }
+            else if (gyro.x > 0)
+            {
+                _anim.Play(clips[0].name);
+            }
+            else
+            {
+                _anim.Play(clips[1].name);
             }
         }
-        else if (/*Input.GetKey ("a")*/gyro.x < lastGyro.x)
+        else if (gyro.y < 0)
         {
-            if (_currentDirection != 2)
+            if (Mathf.Abs(gyro.y) > Mathf.Abs(gyro.x))
             {
-                _currentDirection = 2;
-                Destroy(_currentObject);
-                _currentObject = Instantiate(playerPrefab[2], lastPosition, Quaternion.identity);
-                _anim = _currentObject.GetComponent<Animator>();
+                _anim.Play(clips[3].name);
             }
-            if (!_anim.enabled)
+            else if (gyro.x > 0)
             {
-                EnableAnimation(1);
+                _anim.Play(clips[0].name);
+            }
+            else
+            {
+                _anim.Play(clips[1].name);
             }
         }
 
-        
-        lastGyro = gyro;
+        _lastGyro = gyro;
 
-
-        //Смена положения игрока
-        _currentObject.transform.position += _speed * move;
-        
+     //   playerPrefab.transform.position += _speed * move;
+        _rb.MovePosition(_rb.position + move * _speed);
         //Если позиция не изменилась, останавливаем анимацию
-        if (lastPosition.x == _currentObject.transform.position.x
-        && lastPosition.y == _currentObject.transform.position.y)
+        if (_lastPosition.x == transform.position.x
+        && _lastPosition.y == transform.position.y)
         {
-            EnableAnimation(0);
+            //EnableAnimation(0);
         }
-        
-        //Запрет на сальто
-        _currentObject.transform.rotation = playerPrefab[0].transform.rotation;
     }
-    private void EnableAnimation(int value)
+
+    private float FindMaxValue(float val1, float val2, float val3, float val4)
     {
-        switch (value)
-        {
-            case 1:
-                _anim.enabled = true;
-                _anim.speed = 1f;
-                break;
-            case 0:
-                _anim.enabled = false;
-                _anim.speed = 0;
-                break;
-        }
+        float maxValue = val1;
+        if (maxValue > val2)
+            maxValue = val2;
+        if (maxValue > val3)
+            maxValue = val3;
+        if (maxValue > val4)
+            maxValue = val4;
+
+        return maxValue;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -10,6 +10,8 @@ public class Constructor : MonoBehaviour
     
     [SerializeField] private GameObject controller;
 
+    [SerializeField] private GameObject player;
+
     private int _pointCount = 0;
     private int _angle;
     private GameObject _obj;
@@ -37,7 +39,7 @@ public class Constructor : MonoBehaviour
     public int[,] GenerateNewMaze(int sizeRows, int sizeCols)
     {
         _gameController = controller.GetComponent<GameController>();
-        _player = controller.GetComponent<Player>();
+        _player = player.GetComponent<Player>();
 
         var helpCheckWall = new CheckWall();
 
@@ -69,7 +71,7 @@ public class Constructor : MonoBehaviour
             {
                 if (i == 1 && j == 1)
                 {
-                    _player.CreatePlayer(maze, widthCell, heightCell, firstCell);
+                    _player.CreatePlayer(widthCell, heightCell, firstCell);
                     firstCell.x += widthCell;
                     continue;
                 }

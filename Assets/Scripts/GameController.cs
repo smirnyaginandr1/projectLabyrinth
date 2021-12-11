@@ -38,7 +38,13 @@ public class GameController : MonoBehaviour
 
         var widthCount = (int)(_width);
         var heightCount = (int)(widthCount * percent);
-        
+
+        if (widthCount % 2 == 0)
+            widthCount++;
+
+        if (heightCount % 2 == 0)
+            heightCount++;
+
         _generator = GetComponent<Constructor>();
         _maze = _generator.GenerateNewMaze(heightCount, widthCount);
 
