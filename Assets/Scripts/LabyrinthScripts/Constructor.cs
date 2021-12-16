@@ -27,6 +27,9 @@ public class Constructor : MonoBehaviour
 
     private GameController _gameController;
     private Player _player;
+
+    private GameObject _finishWall;
+
     private struct CheckWall
     {
         public bool top;
@@ -222,7 +225,17 @@ public class Constructor : MonoBehaviour
 
                 }
                 
-                Instantiate(_obj, firstCell, Quaternion.identity)
+                if (i == 0 && j == 1)
+                {
+                    _finishWall = Instantiate(_obj, firstCell, Quaternion.identity);
+                        _finishWall.transform.rotation =
+                    Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + _angle));
+                   // _gameController.SetFinishWall(_finishWall);
+                    
+
+                }
+                else 
+                    Instantiate(_obj, firstCell, Quaternion.identity)
                         .transform.rotation =
                     Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z + _angle));
                 firstCell.x += widthCell;
@@ -240,5 +253,10 @@ public class Constructor : MonoBehaviour
     {
         _obj = wall;
         _angle = angle;
+    }
+
+    public GameObject GetFinishWall()
+    {
+        return _finishWall;
     }
 }

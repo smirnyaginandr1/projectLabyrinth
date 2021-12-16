@@ -7,6 +7,11 @@ TagManager:
   - Wall
   - Point
   - Controller
+  - ButtonRestart
+  - ButtonResume
+  - ButtonExit
+  - Cursor
+  - ButtonLabyrinth
   layers:
   - Default
   - TransparentFX
@@ -14,7 +19,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Cursor
   - 
   - 
   - 

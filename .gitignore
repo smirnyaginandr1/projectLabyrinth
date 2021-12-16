@@ -84,3 +84,6 @@ Assets/Prefabs/Player/Animation/RunBottom/*.meta
 Assets/Prefabs/Player/Animation/RunRight/*.meta
 Assets/Prefabs/Player/Animation/RunTop/*.meta
 Assets/Sprites/PlayerSprites/*.meta
+Assets/Prefabs/Background/*.meta
+Assets/Scripts/LabyrinthScripts/*.meta
+Assets/Scripts/MainMenu/*.meta
