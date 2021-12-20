@@ -87,3 +87,4 @@ Assets/Sprites/PlayerSprites/*.meta
 Assets/Prefabs/Background/*.meta
 Assets/Scripts/LabyrinthScripts/*.meta
 Assets/Scripts/MainMenu/*.meta
+Assets/Scripts/Calibration/*.meta

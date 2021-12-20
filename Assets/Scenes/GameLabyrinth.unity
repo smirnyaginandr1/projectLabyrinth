@@ -299,8 +299,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -104.3}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 2.3538, y: -150}
+  m_SizeDelta: {x: 228.27, y: 71.1971}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &211617053
 MonoBehaviour:
@@ -323,7 +323,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.5230413, g: 0.49279103, b: 0.9245283, a: 0.5882353}
+    m_NormalColor: {r: 0.5230413, g: 0.49279103, b: 0.9245283, a: 1}
     m_HighlightedColor: {r: 0.2743414, g: 0.2743414, b: 0.4245283, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -348,7 +348,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1806124733}
         m_TargetAssemblyTypeName: GameController, Assembly-CSharp
-        m_MethodName: ExitMainMenu
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -357,7 +357,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 0
 --- !u!114 &211617054
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,7 +420,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 157.15, y: 25.66}
+  m_Size: {x: 224.7, y: 67}
   m_EdgeRadius: 0
 --- !u!1001 &300245746
 PrefabInstance:
@@ -575,8 +575,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 437258364}
   - {fileID: 1866268839}
+  - {fileID: 437258364}
   - {fileID: 211617052}
   - {fileID: 726749679}
   - {fileID: 47700273}
@@ -622,12 +622,12 @@ RectTransform:
   m_Children:
   - {fileID: 1818405810}
   m_Father: {fileID: 388393081}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -58}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 0.58848, y: -72.8229}
+  m_SizeDelta: {x: 231.8, y: 66.4889}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &437258365
 MonoBehaviour:
@@ -650,7 +650,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.5230413, g: 0.49279103, b: 0.9245283, a: 0.5882353}
+    m_NormalColor: {r: 0.5230413, g: 0.49279103, b: 0.9245283, a: 1}
     m_HighlightedColor: {r: 0.2743414, g: 0.2743414, b: 0.4245283, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -675,7 +675,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1806124733}
         m_TargetAssemblyTypeName: GameController, Assembly-CSharp
-        m_MethodName: ReloadScene
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -684,7 +684,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 0
 --- !u!114 &437258366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -747,7 +747,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 156.17, y: 26.3}
+  m_Size: {x: 227.66, y: 61.2}
   m_EdgeRadius: 0
 --- !u!1 &519420028
 GameObject:
@@ -885,7 +885,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5996398, g: 0.5338644, b: 0.8773585, a: 0.7294118}
+  m_Color: {r: 0.5996398, g: 0.5338644, b: 0.8773585, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1334,12 +1334,12 @@ RectTransform:
   m_Children:
   - {fileID: 1321399986}
   m_Father: {fileID: 388393081}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -15}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -0.000011444, y: -0.0000019073}
+  m_SizeDelta: {x: 232.9776, y: 60.6035}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!61 &1866268840
 BoxCollider2D:
@@ -1365,7 +1365,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 157.15, y: 25.66}
+  m_Size: {x: 231.1, y: 55.9}
   m_EdgeRadius: 0
 --- !u!114 &1866268841
 MonoBehaviour:
@@ -1388,7 +1388,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.5230413, g: 0.49279103, b: 0.9245283, a: 0.5882353}
+    m_NormalColor: {r: 0.5230413, g: 0.49279103, b: 0.9245283, a: 1}
     m_HighlightedColor: {r: 0.2743414, g: 0.2743414, b: 0.4245283, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1413,7 +1413,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1806124733}
         m_TargetAssemblyTypeName: GameController, Assembly-CSharp
-        m_MethodName: Resume
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1422,7 +1422,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 0
 --- !u!114 &1866268842
 MonoBehaviour:
   m_ObjectHideFlags: 0

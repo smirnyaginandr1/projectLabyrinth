@@ -9,11 +9,9 @@ public class CursorMainMenu : MonoBehaviour
 
     string currentButtonTag = "";
 
+    readonly float _speed = 10.0f;
 
-
-    private readonly float _speed = 10.0f;
-
-    private Vector2 _lastGyro;
+    Vector2 _lastGyro;
 
     Vector3 accel;
     // Start is called before the first frame update
@@ -21,6 +19,7 @@ public class CursorMainMenu : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody2D>();
         _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        _rb.transform.position = Singleton.GetCoordinateCurrent();
 
         Input.gyro.enabled = true;
         _lastGyro = Input.gyro.rotationRateUnbiased;
@@ -37,15 +36,20 @@ public class CursorMainMenu : MonoBehaviour
         if (currentButtonTag == "ButtonLabyrinth")
         {
             if (accel.x < -0.5)
-                SceneManager.LoadScene(1);
+            {
+                Singleton.SetCoordinateCurrent(_rb.transform.position);
+                SceneManager.LoadScene("GameLabyrinth");
+
+            }
+                
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
         currentButtonTag = other.tag;
     }
-    private void OnTriggerExit2D(Collider2D other)
+    void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("ButtonLabyrinth"))
             currentButtonTag = "";

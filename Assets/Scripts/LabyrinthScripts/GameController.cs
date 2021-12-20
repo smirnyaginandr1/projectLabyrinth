@@ -10,49 +10,44 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private GameObject _textObj;
+    [SerializeField] GameObject _textObj;
 
     Text _text;
 
-    [SerializeField] private GameObject _buttonRestart;
+    [SerializeField] GameObject _buttonRestart;
 
-    [SerializeField] private GameObject _buttonResume;
+    [SerializeField] GameObject _buttonResume;
 
-    [SerializeField] private GameObject _buttonExit;
+    [SerializeField] GameObject _buttonExit;
 
-    [SerializeField] private GameObject _cursor;
+    [SerializeField] GameObject _cursor;
     Cursor cursorScript;
 
-    [SerializeField] private GameObject _player;
+    [SerializeField] GameObject _player;
     Player playerScript;
 
 
-    private Constructor _generator;
+    Constructor _generator;
 
-    private int _currentPoint;
+    int _currentPoint;
 
     bool isPause = false;
 
-    private int[,] _maze;
-
-    private float _height, _width;
+    int[,] _maze;
 
     Vector3 accel;
 
-    [SerializeField] private GameObject background;
+    [SerializeField] GameObject background;
 
-    private void Start()
+    void Start()
     {
         _text = _textObj.GetComponent<Text>();
 
         ActiveUIFalse();
 
-        _height = Camera.main.orthographicSize * 1.95f;
-        _width = _height / Screen.height * Screen.width;
+        var percent = Singleton.GetHeightDisplay() / Singleton.GetWidthDisplay();
 
-        var percent = _height / _width;
-
-        var widthCount = (int)(_width);
+        var widthCount = (int)(Singleton.GetWidthDisplay());
         var heightCount = (int)(widthCount * percent);
 
         if (widthCount % 2 == 0)
@@ -70,7 +65,7 @@ public class GameController : MonoBehaviour
         cursorScript = _cursor.GetComponent<Cursor>();
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         accel = Input.acceleration;
         if (accel.x > 0.5f)
@@ -78,8 +73,8 @@ public class GameController : MonoBehaviour
             if (!isPause)
             {
                 ActiveUIPause();
-                playerScript.SetPause(true);
-                cursorScript.Active(true);
+                playerScript.isPause = true;
+                cursorScript.active = true;
             }
         }
         else if (accel.y < -0.5f)
@@ -104,26 +99,25 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void AddCurrentPoint()
+    public int maxPoint
     {
-        _currentPoint++;
+        get
+        {
+            return maxPoint;
+        }
+        set
+        {
+            maxPoint = value;
+        }
     }
 
-    private int _maxPoint;
-
-    public void SetMaxPoint(int point)
-    {
-        _maxPoint = point;
-    }
-    
     public int GetCurrentPoint()
     {
         return _currentPoint;
     }
-
-    public int GetMaxPoint()
+    public void AddCurrentPoint()
     {
-        return _maxPoint;
+        _currentPoint++;
     }
 
     public void OpenFinish()
@@ -140,8 +134,8 @@ public class GameController : MonoBehaviour
         ActiveUIFalse();
         ActiveUIWin();
 
-        playerScript.SetPause(true);
-        cursorScript.Active(true);
+        playerScript.isPause = true;
+        cursorScript.active = true;
     }
 
     public void ReloadScene()
@@ -153,13 +147,13 @@ public class GameController : MonoBehaviour
     {
         isPause = false;
         ActiveUIFalse();
-        playerScript.SetPause(false);
-        cursorScript.Active(false);
+        playerScript.isPause = false;
+        cursorScript.active = false;
     }
 
     public void ExitMainMenu()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenu");
     }
 
     void ActiveUIFalse()

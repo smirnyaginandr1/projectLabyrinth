@@ -114,8 +114,6 @@ public class MazeDataGenerator
                 currentCell = getUnvisitedCells(sizeCols, sizeRows, maze);
                 if (currentCell == null)
                     break;
-                //int randNum = Random.Range(0, cellStringUnvisited.size - 1);
-                //currentCell = cellStringUnvisited.cells[randNum];
             }
         }
         while (unvisitedCount(sizeRows, sizeCols, maze) > 0);
@@ -125,7 +123,7 @@ public class MazeDataGenerator
     }
 
 
-    private int unvisitedCount(int sizeRows, int sizeCols, int[,] maze)
+    int unvisitedCount(int sizeRows, int sizeCols, int[,] maze)
     {
         int cnt = 0;
         for (int i = 1; i < sizeCols; i++)

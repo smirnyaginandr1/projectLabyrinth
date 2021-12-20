@@ -4,23 +4,33 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     //Аниматор для запуска анимаций
-    private Animator _anim;
+    Animator _anim;
 
-    [SerializeField] private GameObject controller;
-    private GameController _gameController;
+    [SerializeField] GameObject controller;
+    GameController _gameController;
 
-    private AnimationClip[] clips;
+    AnimationClip[] clips;
     //Скорость игрока
-    private readonly float _speed = 0.2f;
+    readonly float _speed = 0.2f;
 
-    private bool isPause;
+    public bool isPause
+    {
+        get
+        {
+            return isPause;
+        }
+        set
+        {
+            isPause = value;
+        }
+    }
 
     //Флаг ожидания инициализации
-    private bool _start;
+    bool _start;
 
     //Переменные для гироскопа
-    private Vector2 _lastGyro;
-    private Rigidbody2D _rb;
+    Vector2 _lastGyro;
+    Rigidbody2D _rb;
 
     public void CreatePlayer(float widthCell, float heightCell, Vector2 firstCell)
     {
@@ -42,9 +52,9 @@ public class Player : MonoBehaviour
         _anim.Play(clips[0].name);
     }
     
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        if (!_start) return;
+        if (!_start && isPause) return;
 
         var gyro = Vector2.Lerp(_lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
         var move = new Vector2(-_lastGyro.y, _lastGyro.x);
@@ -81,18 +91,11 @@ public class Player : MonoBehaviour
         }
 
         _lastGyro = gyro;
-        if (!isPause)
-        {
-            _rb.MovePosition(_rb.position + move * _speed);
-        }
+      
+        _rb.MovePosition(_rb.position + move * _speed);
     }
 
-    public void SetPause(bool pause)
-    {
-        isPause = pause;
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Point"))
         {
@@ -101,7 +104,7 @@ public class Player : MonoBehaviour
             controller = GameObject.FindWithTag("Controller");
             _gameController = controller.GetComponent<GameController>();
             _gameController.AddCurrentPoint();
-            if (_gameController.GetCurrentPoint() == _gameController.GetMaxPoint())
+            if (_gameController.GetCurrentPoint() == _gameController.maxPoint)
                 _gameController.OpenFinish();
         }
 

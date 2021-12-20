@@ -4,15 +4,26 @@ using UnityEngine;
 
 public class Cursor : MonoBehaviour
 {
-    bool active = false;
+    public bool active
+    {
+        get
+        {
+            return active;
+        }
+
+        set
+        {
+            active = value;
+        }
+    }
 
     Rigidbody2D _rb;
 
     string currentButtonTag = "";
 
-    private readonly float _speed = 10.0f;
+    readonly float _speed = 10.0f;
 
-    private Vector2 _lastGyro;
+    Vector2 _lastGyro;
 
     // Start is called before the first frame update
     void Start()
@@ -36,17 +47,12 @@ public class Cursor : MonoBehaviour
         }
     }
 
-    public void Active(bool activ)
-    {
-        active = activ;
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("ButtonResume") || other.CompareTag("ButtonRestart") || other.CompareTag("ButtonExit"))
             currentButtonTag = other.tag;
     }
-    private void OnTriggerExit2D(Collider2D other)
+    void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("ButtonResume") || other.CompareTag("ButtonRestart") || other.CompareTag("ButtonExit"))
             currentButtonTag = "";

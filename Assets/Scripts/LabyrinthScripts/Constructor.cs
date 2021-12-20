@@ -6,31 +6,31 @@ using UnityEngine;
 
 public class Constructor : MonoBehaviour
 {
-    [SerializeField] private GameObject pointPrefab;
+    [SerializeField] GameObject pointPrefab;
     
-    [SerializeField] private GameObject controller;
+    [SerializeField] GameObject controller;
 
-    [SerializeField] private GameObject player;
+    [SerializeField] GameObject player;
 
-    private int _pointCount = 0;
-    private int _angle;
-    private GameObject _obj;
+    int _pointCount = 0;
+    int _angle;
+    GameObject _obj;
     
-    private const int Wall0 = 0;
-    private const int Wall1 = 1;
-    private const int Wall2 = 2;
-    private const int Wall2Angle = 3;
-    private const int Wall3 = 4;
-    private const int Wall4 = 5;
+    const int Wall0 = 0;
+    const int Wall1 = 1;
+    const int Wall2 = 2;
+    const int Wall2Angle = 3;
+    const int Wall3 = 4;
+    const int Wall4 = 5;
     
-    [SerializeField] private GameObject[] allWall;
+    [SerializeField] GameObject[] allWall;
 
-    private GameController _gameController;
-    private Player _player;
+    GameController _gameController;
+    Player _player;
 
-    private GameObject _finishWall;
+    GameObject _finishWall;
 
-    private struct CheckWall
+    struct CheckWall
     {
         public bool top;
         public bool bottom;
@@ -51,22 +51,19 @@ public class Constructor : MonoBehaviour
 
         if (Camera.main is null)
             return null;
-        
-        var height = Camera.main.orthographicSize * 1.95f;
-        var width = height / Screen.height * Screen.width;
-        
+
         var rMax = maze.GetUpperBound(0);
         var cMax = maze.GetUpperBound(1);
 
-        var heightCell = height / (rMax + 1);
-        var widthCell = width / (cMax + 1);
+        var heightCell = Singleton.GetHeightDisplay() / (rMax + 1);
+        var widthCell = Singleton.GetWidthDisplay() / (cMax + 1);
         
         foreach (var t in allWall)
             t.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f , 2);
         
         pointPrefab.transform.localScale = new Vector3(widthCell - 0.8f, heightCell - 0.8f, 2);
         pointPrefab.SetActive(true);
-        var firstCell = new Vector2(-width / 2 + widthCell / 2, height / 2 - heightCell / 2);
+        var firstCell = new Vector2(-Singleton.GetWidthDisplay() / 2 + widthCell / 2, Singleton.GetHeightDisplay() / 2 - heightCell / 2);
 
         for (var i = rMax; i >= 0; i--)
         {
@@ -242,14 +239,14 @@ public class Constructor : MonoBehaviour
             }
 
             firstCell.y -= heightCell;
-            firstCell.x = -width / 2 + widthCell / 2;
+            firstCell.x = -Singleton.GetWidthDisplay() / 2 + widthCell / 2;
         }
         
-        _gameController.SetMaxPoint(_pointCount);
+        _gameController.maxPoint = _pointCount;
         return maze;
     }
 
-    private void SetWallAngle(GameObject wall, int angle)
+    void SetWallAngle(GameObject wall, int angle)
     {
         _obj = wall;
         _angle = angle;
