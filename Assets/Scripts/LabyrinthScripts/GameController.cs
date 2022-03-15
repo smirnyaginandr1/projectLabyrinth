@@ -26,6 +26,8 @@ public class GameController : MonoBehaviour
     [SerializeField] GameObject _player;
     Player playerScript;
 
+    [SerializeField] GameObject _monster;
+    Monster monsterScript;
 
     Constructor _generator;
 
@@ -41,13 +43,16 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        Display.SetHeightDisplay(Camera.main.orthographicSize * 1.95f);
+        Display.SetWidthDisplay(Display.GetHeightDisplay() / Screen.height * Screen.width);
+
         _text = _textObj.GetComponent<Text>();
 
-        ActiveUIFalse();
+        //ActiveUIFalse();
 
-        var percent = Singleton.GetHeightDisplay() / Singleton.GetWidthDisplay();
+        var percent = Display.GetHeightDisplay() / Display.GetWidthDisplay();
 
-        var widthCount = (int)(Singleton.GetWidthDisplay());
+        var widthCount = (int)(Display.GetWidthDisplay());
         var heightCount = (int)(widthCount * percent);
 
         if (widthCount % 2 == 0)
@@ -63,6 +68,7 @@ public class GameController : MonoBehaviour
 
         playerScript = _player.GetComponent<Player>();
         cursorScript = _cursor.GetComponent<Cursor>();
+        monsterScript = _monster.GetComponent<Monster>();
     }
 
     void FixedUpdate()
@@ -73,8 +79,9 @@ public class GameController : MonoBehaviour
             if (!isPause)
             {
                 ActiveUIPause();
-                playerScript.isPause = true;
-                cursorScript.active = true;
+                playerScript.SetPause(true);
+                cursorScript.SetActive(true);
+                monsterScript.SetPause(true);
             }
         }
         else if (accel.y < -0.5f)
@@ -99,16 +106,16 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public int maxPoint
+    int maxPoint;
+
+    public void SetMaxPoint(int m)
     {
-        get
-        {
-            return maxPoint;
-        }
-        set
-        {
-            maxPoint = value;
-        }
+        maxPoint = m;
+    }
+
+    public int GetMaxPoint()
+    {
+        return maxPoint;
     }
 
     public int GetCurrentPoint()
@@ -129,13 +136,24 @@ public class GameController : MonoBehaviour
         coll.isTrigger = true;
     }
 
+    public void LoseLevel()
+    {
+        ActiveUIFalse();
+        ActiveUILose();
+
+        playerScript.SetPause(true);
+        cursorScript.SetActive(true);
+        monsterScript.SetPause(true);
+    }
+
     public void FinishLevel()
     {
         ActiveUIFalse();
         ActiveUIWin();
 
-        playerScript.isPause = true;
-        cursorScript.active = true;
+        playerScript.SetPause(true);
+        monsterScript.SetPause(true);
+        cursorScript.SetActive(true);
     }
 
     public void ReloadScene()
@@ -147,8 +165,9 @@ public class GameController : MonoBehaviour
     {
         isPause = false;
         ActiveUIFalse();
-        playerScript.isPause = false;
-        cursorScript.active = false;
+        playerScript.SetPause(false);
+        cursorScript.SetActive(false);
+        monsterScript.SetPause(false);
     }
 
     public void ExitMainMenu()

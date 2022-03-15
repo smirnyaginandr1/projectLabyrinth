@@ -5,24 +5,19 @@ public class Player : MonoBehaviour
 {
     //Аниматор для запуска анимаций
     Animator _anim;
+    AnimationClip[] clips;
 
     [SerializeField] GameObject controller;
     GameController _gameController;
 
-    AnimationClip[] clips;
     //Скорость игрока
     readonly float _speed = 0.2f;
 
-    public bool isPause
+    bool isPause;
+
+    public void SetPause(bool p)
     {
-        get
-        {
-            return isPause;
-        }
-        set
-        {
-            isPause = value;
-        }
+        isPause = p;
     }
 
     //Флаг ожидания инициализации
@@ -34,7 +29,7 @@ public class Player : MonoBehaviour
 
     public void CreatePlayer(float widthCell, float heightCell, Vector2 firstCell)
     {
-        transform.localScale = new Vector2(widthCell + 0.5f, heightCell + 0.5f);
+        transform.localScale = new Vector2(widthCell + 1.0f, heightCell + 1.0f);
         transform.position = new Vector2(firstCell.x, firstCell.y);
 
         _anim = GetComponent<Animator>();
@@ -54,7 +49,7 @@ public class Player : MonoBehaviour
     
     void FixedUpdate()
     {
-        if (!_start && isPause) return;
+        if (!_start || isPause) return;
 
         var gyro = Vector2.Lerp(_lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
         var move = new Vector2(-_lastGyro.y, _lastGyro.x);
@@ -67,7 +62,7 @@ public class Player : MonoBehaviour
             }
             else if (gyro.x > 0)
             {
-                _anim.Play(clips[0].name);
+                _anim.Play(clips[3].name);
             }
             else
             {
@@ -78,11 +73,11 @@ public class Player : MonoBehaviour
         {
             if (Mathf.Abs(gyro.y) > Mathf.Abs(gyro.x))
             {
-                _anim.Play(clips[3].name);
+                _anim.Play(clips[0].name);
             }
             else if (gyro.x > 0)
             {
-                _anim.Play(clips[0].name);
+                _anim.Play(clips[3].name);
             }
             else
             {
@@ -91,7 +86,7 @@ public class Player : MonoBehaviour
         }
 
         _lastGyro = gyro;
-      
+
         _rb.MovePosition(_rb.position + move * _speed);
     }
 
@@ -104,13 +99,18 @@ public class Player : MonoBehaviour
             controller = GameObject.FindWithTag("Controller");
             _gameController = controller.GetComponent<GameController>();
             _gameController.AddCurrentPoint();
-            if (_gameController.GetCurrentPoint() == _gameController.maxPoint)
+            if (_gameController.GetCurrentPoint() == _gameController.GetMaxPoint())
                 _gameController.OpenFinish();
         }
 
         if (other.CompareTag("Finish"))
         {
             _gameController.FinishLevel();
+        }
+
+        if (other.CompareTag("Monster"))
+        {
+            _gameController.LoseLevel();
         }
     }
 }

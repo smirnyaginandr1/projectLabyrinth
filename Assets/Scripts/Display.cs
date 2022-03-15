@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Singleton
+public static class Display
 {
     static float widthDisplay;
     static float heightDisplay;
+
+    public static bool debug = false;
 
     static Vector3 coordinateCenter;
     static Vector3 coordinateLB;
@@ -19,39 +21,48 @@ public static class Singleton
     {
         widthDisplay = w;
     }
+
+
     public static float GetWidthDisplay()
     {
+        if (debug)
+            return Camera.main.orthographicSize * 1.95f / Screen.height * Screen.width;
         return widthDisplay;
     }
-
 
 
     public static void SetHeightDisplay(float w)
     {
         heightDisplay = w;
     }
+
+
     public static float GetHeightDisplay()
     {
+        if (debug)
+            return Camera.main.orthographicSize * 1.95f;
         return heightDisplay;
     }
-
 
 
     public static void SetCoordinateLB(Vector3 coord)
     {
         coordinateLB = coord;
     }
+
+
     public static Vector3 GetCoordinateLB()
     {
         return coordinateLB;
     }
 
 
-
     public static void SetCoordinateRB(Vector3 coord)
     {
         coordinateRB = coord;
     }
+
+
     public static Vector3 GetCoordinateRB()
     {
         return coordinateRB;
@@ -62,27 +73,31 @@ public static class Singleton
     {
         coordinateLT = coord;
     }
+
+
     public static Vector3 GetCoordinateLT()
     {
         return coordinateLT;
     }
 
-
     public static void SetCoordinateRT(Vector3 coord)
     {
         coordinateRT = coord;
     }
+
+
     public static Vector3 GetCoordinateRT()
     {
         return coordinateRT;
     }
 
 
-
     public static void SetCoordinateCenter(Vector3 coord)
     {
         coordinateCenter = coord;
     }
+    
+
     public static Vector3 GetCoordinateCenter()
     {
         return coordinateCenter;
@@ -93,103 +108,10 @@ public static class Singleton
     {
         coordinateCurrent = coord;
     }
+    
+    
     public static Vector3 GetCoordinateCurrent()
     {
         return coordinateCurrent;
     }
-    //public static float widthDisplay
-    //{
-    //    get
-    //    {
-    //        return widthDisplay;
-    //    }
-    //    set
-    //    {
-    //        widthDisplay = value;
-    //    }
-    //}
-
-    //public static float heightDisplay
-    //{
-    //    get
-    //    {
-    //        return heightDisplay;
-    //    }
-    //    set
-    //    {
-    //        widthDisplay = value;
-    //    }
-    //}
-
-    //public static Vector3 coordinateRB
-    //{
-    //    get
-    //    {
-    //        return coordinateRB;
-    //    }
-    //    set
-    //    {
-    //        coordinateRB = value;
-    //    }
-    //}
-
-    //public static Vector3 coordinateLT
-    //{
-    //    get
-    //    {
-    //        return coordinateLT;
-    //    }
-    //    set
-    //    {
-    //        coordinateLT = value;
-    //    }
-    //}
-
-    //public static Vector3 coordinateRT
-    //{
-    //    get
-    //    {
-    //        return coordinateRT;
-    //    }
-    //    set
-    //    {
-    //        coordinateRT = value;
-    //    }
-    //}
-
-    //public static Vector3 coordinateLB
-    //{
-    //    get
-    //    {
-    //        return coordinateLB;
-    //    }
-    //    set
-    //    {
-    //        coordinateLB = value;
-    //    }
-    //}
-
-    //public static Vector3 current
-    //{
-    //    get
-    //    {
-    //        return current;
-    //    }
-    //    set
-    //    {
-    //        current = value;
-    //    }
-    //}
-
-    //public static Vector3 coordinateCenter
-    //{
-    //    get
-    //    {
-    //        return coordinateCenter;
-    //    }
-    //    set
-    //    {
-    //        coordinateCenter = value;
-    //    }
-    //}
 }

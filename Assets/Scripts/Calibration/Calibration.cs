@@ -46,8 +46,10 @@ public class Calibration : MonoBehaviour
 
     void Start()
     {
-        Singleton.SetWidthDisplay(Camera.main.orthographicSize * 1.95f);
-        Singleton.SetHeightDisplay(Singleton.GetWidthDisplay() / Screen.height * Screen.width);
+        Display.debug = true;
+
+        Display.SetHeightDisplay(Camera.main.orthographicSize * 1.95f);
+        Display.SetWidthDisplay(Display.GetHeightDisplay() / Screen.height * Screen.width);
 
         sizeArrowX = arrows[0].transform.localScale.x;
         sizeArrowY = arrows[0].transform.localScale.y;
@@ -122,19 +124,19 @@ public class Calibration : MonoBehaviour
             switch (i)
             {
                 case 0:
-                    Singleton.SetCoordinateCenter( pointCurentPosition);
+                    Display.SetCoordinateCenter( pointCurentPosition);
                     break;
                 case 1:
-                    Singleton.SetCoordinateLB(pointCurentPosition);
+                    Display.SetCoordinateLB(pointCurentPosition);
                     break;
                 case 2:
-                    Singleton.SetCoordinateLT(pointCurentPosition);
+                    Display.SetCoordinateLT(pointCurentPosition);
                     break;
                 case 3:
-                    Singleton.SetCoordinateRT(pointCurentPosition);
+                    Display.SetCoordinateRT(pointCurentPosition);
                     break;
                 case 4:
-                    Singleton.SetCoordinateRB(pointCurentPosition);
+                    Display.SetCoordinateRB(pointCurentPosition);
                     break;
             }
         }
@@ -143,7 +145,7 @@ public class Calibration : MonoBehaviour
         yield return StartCoroutine(VisibleText());
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(InvisibleText());
-        Singleton.SetCoordinateCurrent(pointCurentPosition);
+        Display.SetCoordinateCurrent(pointCurentPosition);
         SceneManager.LoadScene("MainMenu");
     }
 

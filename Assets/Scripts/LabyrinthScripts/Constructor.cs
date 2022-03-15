@@ -12,6 +12,8 @@ public class Constructor : MonoBehaviour
 
     [SerializeField] GameObject player;
 
+    [SerializeField] GameObject monster;
+
     int _pointCount = 0;
     int _angle;
     GameObject _obj;
@@ -27,6 +29,7 @@ public class Constructor : MonoBehaviour
 
     GameController _gameController;
     Player _player;
+    Monster _monster;
 
     GameObject _finishWall;
 
@@ -43,6 +46,8 @@ public class Constructor : MonoBehaviour
     {
         _gameController = controller.GetComponent<GameController>();
         _player = player.GetComponent<Player>();
+        _monster = monster.GetComponent<Monster>();
+
 
         var helpCheckWall = new CheckWall();
 
@@ -55,15 +60,15 @@ public class Constructor : MonoBehaviour
         var rMax = maze.GetUpperBound(0);
         var cMax = maze.GetUpperBound(1);
 
-        var heightCell = Singleton.GetHeightDisplay() / (rMax + 1);
-        var widthCell = Singleton.GetWidthDisplay() / (cMax + 1);
+        var heightCell = Display.GetHeightDisplay() / (rMax + 1);
+        var widthCell = Display.GetWidthDisplay() / (cMax + 1);
         
         foreach (var t in allWall)
-            t.transform.localScale = new Vector3(widthCell - 0.5f, heightCell - 0.5f , 2);
+            t.transform.localScale = new Vector3(widthCell + 1.2f, heightCell + 1.2f, 2);
         
-        pointPrefab.transform.localScale = new Vector3(widthCell - 0.8f, heightCell - 0.8f, 2);
+        pointPrefab.transform.localScale = new Vector3(widthCell - 0.2f, heightCell - 0.2f, 2);
         pointPrefab.SetActive(true);
-        var firstCell = new Vector2(-Singleton.GetWidthDisplay() / 2 + widthCell / 2, Singleton.GetHeightDisplay() / 2 - heightCell / 2);
+        var firstCell = new Vector2(-Display.GetWidthDisplay() / 2 + widthCell / 2, Display.GetHeightDisplay() / 2 - heightCell / 2);
 
         for (var i = rMax; i >= 0; i--)
         {
@@ -72,6 +77,13 @@ public class Constructor : MonoBehaviour
                 if (i == 1 && j == 1)
                 {
                     _player.CreatePlayer(widthCell, heightCell, firstCell);
+                    firstCell.x += widthCell;
+                    continue;
+                }
+
+                if (i == rMax - 1 && j == cMax - 1)
+                {
+                    _monster.CreateMonster(firstCell, widthCell, heightCell, maze, allWall[0].transform.localScale);
                     firstCell.x += widthCell;
                     continue;
                 }
@@ -239,10 +251,10 @@ public class Constructor : MonoBehaviour
             }
 
             firstCell.y -= heightCell;
-            firstCell.x = -Singleton.GetWidthDisplay() / 2 + widthCell / 2;
+            firstCell.x = -Display.GetWidthDisplay() / 2 + widthCell / 2;
         }
         
-        _gameController.maxPoint = _pointCount;
+        _gameController.SetMaxPoint(_pointCount);
         return maze;
     }
 

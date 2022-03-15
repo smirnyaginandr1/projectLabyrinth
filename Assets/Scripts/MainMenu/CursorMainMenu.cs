@@ -17,9 +17,15 @@ public class CursorMainMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Vector3 test = Display.GetCoordinateCenter();
+        Vector3 test1 = Display.GetCoordinateCurrent();
+        Vector3 test2 = Display.GetCoordinateLB();
+        Vector3 test3 = Display.GetCoordinateLT();
+        Vector3 test4 = Display.GetCoordinateRB();
+        Vector3 test5 = Display.GetCoordinateRT();
         _rb = GetComponent<Rigidbody2D>();
         _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        _rb.transform.position = Singleton.GetCoordinateCurrent();
+        _rb.transform.position = Display.GetCoordinateCurrent();
 
         Input.gyro.enabled = true;
         _lastGyro = Input.gyro.rotationRateUnbiased;
@@ -37,11 +43,9 @@ public class CursorMainMenu : MonoBehaviour
         {
             if (accel.x < -0.5)
             {
-                Singleton.SetCoordinateCurrent(_rb.transform.position);
+                Display.SetCoordinateCurrent(_rb.transform.position);
                 SceneManager.LoadScene("GameLabyrinth");
-
             }
-                
         }
     }
 

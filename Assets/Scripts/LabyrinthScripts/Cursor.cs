@@ -4,17 +4,10 @@ using UnityEngine;
 
 public class Cursor : MonoBehaviour
 {
-    public bool active
+    bool active = false;
+    public void SetActive(bool a)
     {
-        get
-        {
-            return active;
-        }
-
-        set
-        {
-            active = value;
-        }
+        active = a;
     }
 
     Rigidbody2D _rb;

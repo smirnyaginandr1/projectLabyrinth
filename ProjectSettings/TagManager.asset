@@ -12,6 +12,11 @@ TagManager:
   - ButtonExit
   - Cursor
   - ButtonLabyrinth
+  - Monster
+  - ButtonTarget
+  - ButtonPingPong
+  - ButtonSettings
+  - ButtonCalibration
   layers:
   - Default
   - TransparentFX
