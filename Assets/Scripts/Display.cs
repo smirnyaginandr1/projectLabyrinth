@@ -7,7 +7,7 @@ public static class Display
     static float widthDisplay;
     static float heightDisplay;
 
-    public static bool debug = false;
+    public static bool debug = true;
 
     static Vector3 coordinateCenter;
     static Vector3 coordinateLB;
@@ -19,14 +19,14 @@ public static class Display
 
     public static void SetWidthDisplay(float w)
     {
-        widthDisplay = w;
+        widthDisplay = w / 2;
     }
 
 
     public static float GetWidthDisplay()
     {
         if (debug)
-            return Camera.main.orthographicSize * 1.95f / Screen.height * Screen.width;
+            return Camera.main.orthographicSize * 1.95f / Screen.height * Screen.width / 2;
         return widthDisplay;
     }
 
@@ -50,6 +50,12 @@ public static class Display
         coordinateLB = coord;
     }
 
+    public static float GetWidthDisplay2()
+    {
+        if (debug)
+            return (Camera.main.orthographicSize * 1.95f / Screen.height * Screen.width) / 2;
+        return widthDisplay;
+    }
 
     public static Vector3 GetCoordinateLB()
     {

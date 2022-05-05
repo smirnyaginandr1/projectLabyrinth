@@ -88,3 +88,17 @@ Assets/Prefabs/Background/*.meta
 Assets/Scripts/LabyrinthScripts/*.meta
 Assets/Scripts/MainMenu/*.meta
 Assets/Scripts/Calibration/*.meta
+Assets/TextMesh Pro/Shaders/*.meta
+Assets/TextMesh Pro/*.meta
+Assets/TextMesh Pro/Sprites/*.meta
+Assets/TextMesh Pro/Resources/*.meta
+Assets/TextMesh Pro/Resources/Sprite Assets/*.meta
+Assets/TextMesh Pro/Resources/Style Sheets/*.meta
+Assets/Colors/*.meta
+Assets/Prefabs/Interface/*.meta
+Assets/Prefabs/Interface/Background/*.meta
+Assets/Scripts/Last/*.meta
+Assets/TextMesh Pro/Documentation/*.meta
+Assets/TextMesh Pro/Fonts/*.meta
+Assets/TextMesh Pro/Resources/Fonts & Materials/*.meta
+

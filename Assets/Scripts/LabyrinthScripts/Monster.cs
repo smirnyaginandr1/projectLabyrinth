@@ -25,10 +25,7 @@ public class Monster : MonoBehaviour
     int[] currentPoint = { 0, 0};
 
     float _speedTime = 0.001f;
-    
-    //Флаг ожидания инициализации
-    bool _start;
-    bool check = false;
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -38,25 +35,30 @@ public class Monster : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (check)
-        {
-            check = false;
-            StopCoroutine(RunCoroutine());
 
-        }
     }
 
     bool isPause;
-
+    Coroutine myCoroutine;
     public void SetPause(bool p)
     {
         isPause = p;
-        if (isPause)
-            check = true;
-        else
-            StartCoroutine(RunCoroutine());
+        if (!isPause)
+            myCoroutine = StartCoroutine(RunCoroutine());
     }
 
+
+    public void ClearSpeed()
+    {
+        _speedTime = 0.001f;
+    }
+
+    public void AddSpeed()
+    {
+        if (_speedTime < 0.0003)
+            return;
+        _speedTime -= 0.00002f;
+    }
 
     public void CreateMonster(Vector3 firstCell, float w, float h, int[,] maze, Vector3 parent)
     {
@@ -83,7 +85,6 @@ public class Monster : MonoBehaviour
 
         _rb = GetComponent<Rigidbody2D>();
         _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        _start = true;
 
         //_anim.enabled = false;
         _anim.enabled = true;
@@ -91,7 +92,7 @@ public class Monster : MonoBehaviour
         _anim.Play(clips[2].name);
 
         //Запуск движений
-        StartCoroutine(RunCoroutine());
+        myCoroutine = StartCoroutine(RunCoroutine());
     }
 
     void RotateRight()
@@ -110,17 +111,21 @@ public class Monster : MonoBehaviour
             currentRotate--;
     }
 
+    float checkPosition = 0;
+
     IEnumerator RunCoroutine()
     {
-        CheckPosition();
+        if (checkPosition == 0)
+            CheckPosition();
         float temp;
 
         temp = (currentRotate == RUN_BOTTOM || currentRotate == RUN_TOP) ? heightCell : widthCell;
 
         Vector2 vect = transform.position;
         float offset = temp / 50;
-        for (float i = 0; i < temp; i += offset)
+        for (float i = checkPosition; i < temp; i += offset)
         {
+            checkPosition = i;
             switch (currentRotate)
             {
                 case RUN_BOTTOM:
@@ -141,15 +146,14 @@ public class Monster : MonoBehaviour
                 default:
                     break;
             }
-
-        transform.position = vect;
-
-        _rb.MovePosition(vect);
-            yield return new WaitForSeconds(_speedTime * 5);
-    }
-
-
-    yield return StartCoroutine(RunCoroutine());
+            checkPosition = 0;
+            transform.position = vect;
+            _rb.MovePosition(vect);
+            yield return new WaitForSeconds(_speedTime);
+        }
+        AddSpeed();
+        if (!isPause)
+            yield return StartCoroutine(RunCoroutine());
     }
 
     void CheckPosition()

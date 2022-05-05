@@ -8,18 +8,24 @@ public class Calibration : MonoBehaviour
 {
 
     [SerializeField] GameObject textDialogObject;
+    [SerializeField] GameObject textDialogObject1;
     Text textDialog;
+    Text textDialog1;
 
     [SerializeField] GameObject textCounterObject;
+    [SerializeField] GameObject textCounterObject1;
     Text textCounter;
+    Text textCounter1;
 
     float sizeArrowX;
     float sizeArrowY;
     [SerializeField] GameObject[] arrows;
 
+    [SerializeField] GameObject[] arrows1;
+
     [SerializeField] GameObject calibrationPoint;
     bool _pointActive = false;
-    Vector2 _lastGyro;
+    Vector3 _lastGyro;
     readonly float _speed = 10.0f;
     Rigidbody2D _pointRb;
 
@@ -33,29 +39,32 @@ public class Calibration : MonoBehaviour
 
     int textCount = 0;
     string[] textPlayer = { "Привет",
-                            "Перед игрой нужно немного размяться",
+                            "Перед игрой нужно \nнемного размяться",
                             "Следуй инструкциям",
                             
                             "Смотри прямо",
-                            "Опусти голову в левый нижний угол",
-                            "Подними голову в левый верхний угол",
-                            "Поверни голову в правый верхний угол",
-                            "Опусти голову в правый нижний угол",
+                            "Опусти голову в \nлевый нижний угол",
+                            "Подними голову в \nлевый верхний угол",
+                            "Поверни голову в \nправый верхний угол",
+                            "Опусти голову в \nправый нижний угол",
 
                             "Молодец! Приятной игры =)"};
 
     void Start()
     {
-        Display.debug = true;
+        // Display.debug = true;
+        StaticClass.InitJSON("Calibration", gameObject);
 
         Display.SetHeightDisplay(Camera.main.orthographicSize * 1.95f);
-        Display.SetWidthDisplay(Display.GetHeightDisplay() / Screen.height * Screen.width);
+        Display.SetWidthDisplay((Display.GetHeightDisplay() / Screen.height * Screen.width));
 
         sizeArrowX = arrows[0].transform.localScale.x;
         sizeArrowY = arrows[0].transform.localScale.y;
 
         textCounter = textCounterObject.GetComponent<Text>();
+        textCounter1 = textCounterObject1.GetComponent<Text>();
         textDialog = textDialogObject.GetComponent<Text>();
+        textDialog1 = textDialogObject1.GetComponent<Text>();
         StartCoroutine(StartText());
 
         _pointRb = calibrationPoint.GetComponent<Rigidbody2D>();
@@ -65,11 +74,12 @@ public class Calibration : MonoBehaviour
         Input.gyro.enabled = true;
         _lastGyro = Input.gyro.rotationRateUnbiased;
 
-
+        
     }
 
     void Update()
     {
+        StaticClass.SetValue(_lastGyro, Input.acceleration.normalized);
         if (arrowFlag)
         {
             sizeArrowX += 0.001f;
@@ -89,10 +99,12 @@ public class Calibration : MonoBehaviour
 
         foreach (var temp in arrows)
             temp.transform.localScale = new Vector3(sizeArrowX, sizeArrowY, arrows[0].transform.localScale.z);
+        foreach (var temp in arrows1)
+            temp.transform.localScale = new Vector3(sizeArrowX, sizeArrowY, arrows[0].transform.localScale.z);
 
         if (_pointActive)
         {
-            var gyro = Vector2.Lerp(_lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
+            var gyro = Vector3.Lerp(_lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
             var move = new Vector2(-_lastGyro.y, _lastGyro.x);
             _lastGyro = gyro;
             _pointRb.MovePosition(_pointRb.position + move * _speed);
@@ -102,6 +114,7 @@ public class Calibration : MonoBehaviour
             _pointRb.transform.position = pointFirstPosition;
         }
     }
+    int my = 0;
     IEnumerator StartText()
     {
         for (int i = 0; i < 3; i++)
@@ -111,6 +124,8 @@ public class Calibration : MonoBehaviour
             yield return new WaitForSeconds(1f);
             yield return StartCoroutine(InvisibleText());   
         }
+        StaticClass.StartOrStopWriteInFile(true);
+
         for (int i = 0; i < 5; i++)
         {
             NextText();
@@ -119,7 +134,8 @@ public class Calibration : MonoBehaviour
             else
             {
                 _pointActive = true;
-                yield return StartCoroutine(StartCalibration(arrows[i - 1]));
+                my = i - 1;
+                yield return StartCoroutine(StartCalibration(arrows[my]));
             }
             switch (i)
             {
@@ -146,7 +162,11 @@ public class Calibration : MonoBehaviour
         yield return new WaitForSeconds(1f);
         yield return StartCoroutine(InvisibleText());
         Display.SetCoordinateCurrent(pointCurentPosition);
-        SceneManager.LoadScene("MainMenu");
+
+        StaticClass.StartOrStopWriteInFile(false);
+        StaticClass.FinalCreateFileJSON();
+
+        SceneManager.LoadScene("WaitScene");
     }
 
     IEnumerator InvisibleText()
@@ -156,6 +176,7 @@ public class Calibration : MonoBehaviour
             Color color = textDialog.color;
             color.a = ft;
             textDialog.color = color;
+            textDialog1.color = color;
             yield return new WaitForSeconds(.01f);
         }
     }
@@ -167,6 +188,7 @@ public class Calibration : MonoBehaviour
             Color color = textDialog.color;
             color.a = ft;
             textDialog.color = color;
+            textDialog1.color = color;
             yield return new WaitForSeconds(.01f);
         }
         yield return new WaitForSeconds(1.0f);
@@ -175,6 +197,7 @@ public class Calibration : MonoBehaviour
     bool NextText()
     {
         textDialog.text = textPlayer[textCount];
+        textDialog1.text = textPlayer[textCount];
         textCount++;
         if (textCount == textPlayer.Length)
             return false;
@@ -186,14 +209,19 @@ public class Calibration : MonoBehaviour
         yield return StartCoroutine("VisibleText");
 
         textCounterObject.SetActive(true);
+        textCounterObject1.SetActive(true);
         if (arrow != null)
+        {
             arrow.SetActive(true);
+            arrows1[my].SetActive(true);
+        }
 
         yield return new WaitForSeconds(2f);
 
         for (int i = 5; i > 0; i--)
         {
             textCounter.text = i.ToString();
+            textCounter1.text = i.ToString();
             yield return new WaitForSeconds(1f);
         }
 
@@ -201,15 +229,25 @@ public class Calibration : MonoBehaviour
 
         textCounter.fontSize = textDialog.fontSize;
         textCounter.text = "Молодец!";
-        
+
+        textCounter1.fontSize = textDialog1.fontSize;
+        textCounter1.text = "Молодец!";
+
         yield return new WaitForSeconds(1f);
         
         textCounterObject.SetActive(false);
+        textCounterObject1.SetActive(false);
         if (arrow != null)
+        {
             arrow.SetActive(false);
-        
+            arrows1[my].SetActive(false);
+        }
+
         textCounter.text = "5";
         textCounter.fontSize = 140;
+
+        textCounter1.text = "5";
+        textCounter1.fontSize = 140;
 
         yield return StartCoroutine("InvisibleText");
     }

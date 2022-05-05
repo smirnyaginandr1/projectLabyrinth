@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
     bool _start;
 
     //Переменные для гироскопа
-    Vector2 _lastGyro;
+    Vector3 _lastGyro;
     Rigidbody2D _rb;
 
     public void CreatePlayer(float widthCell, float heightCell, Vector2 firstCell)
@@ -45,14 +45,19 @@ public class Player : MonoBehaviour
         _anim.enabled = true;
         _anim.speed = 1f;
         _anim.Play(clips[0].name);
+
+        controller = GameObject.FindWithTag("Controller");
+        _gameController = controller.GetComponent<GameController>();
     }
     
     void FixedUpdate()
     {
         if (!_start || isPause) return;
 
-        var gyro = Vector2.Lerp(_lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
+        var gyro = Vector3.Lerp(_lastGyro, Input.gyro.rotationRateUnbiased, 2f * Time.deltaTime);
         var move = new Vector2(-_lastGyro.y, _lastGyro.x);
+
+        StaticClass.SetValue(_lastGyro, Input.acceleration.normalized);
 
         if (gyro.y > 0)
         {
@@ -96,21 +101,24 @@ public class Player : MonoBehaviour
         {
             var enteredObject = other.gameObject;
             Destroy(enteredObject);
-            controller = GameObject.FindWithTag("Controller");
-            _gameController = controller.GetComponent<GameController>();
+
             _gameController.AddCurrentPoint();
             if (_gameController.GetCurrentPoint() == _gameController.GetMaxPoint())
                 _gameController.OpenFinish();
         }
 
-        if (other.CompareTag("Finish"))
-        {
-            _gameController.FinishLevel();
-        }
-
         if (other.CompareTag("Monster"))
         {
             _gameController.LoseLevel();
+        }
+
+        if (other.CompareTag("Finish"))
+        {
+            _gameController.Finish();
+        }
+        if (other.CompareTag("Wall"))
+        {
+            _gameController.ClearSpeedMonster();
         }
     }
 }
